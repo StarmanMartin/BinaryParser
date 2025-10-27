@@ -36,7 +36,6 @@ def read_attr(path: str) -> pd.DataFrame:
     attrs_lc = pd.concat(attrs_lc, ignore_index=True)
     return attrs_lc
 
-
 # LC Data
 @typechecked
 def get_lc_data(path: str) -> pd.DataFrame:

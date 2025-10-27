@@ -19,7 +19,7 @@ jobs:
     steps:
       # Step 1: Checkout the repository
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Set up Python environment
       - name: Set up Python ${{ matrix.python-version }}
@@ -29,7 +29,7 @@ jobs:
 
       # Step 3: Cache Python dependencies
       - name: Cache Python Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ matrix.python-version }}
@@ -55,7 +55,7 @@ jobs:
 
       # Step 6: Upload built wheels as artifacts
       - name: Upload Built Wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binaryparser-wheels
           path: dist/*.whl

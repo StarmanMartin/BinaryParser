@@ -1,11 +1,12 @@
 name: CI
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
+
+permissions:
+  contents: write   # needed for gh release upload
 
 jobs:
   build:
@@ -17,17 +18,14 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Python environment
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Step 3: Cache Python dependencies
       - name: Cache Python Dependencies
         uses: actions/cache@v4
         with:
@@ -36,65 +34,54 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Step 4: Install dependencies
       - name: Install Build Tools
         run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip build
           python -m pip install pybind11
 
-      # Lint the code
       - name: Lint Code
         uses: wearerequired/lint-action@v2.3.0
         with:
           linters: |
             pylint
 
-      # Step 5: Build the wheel
       - name: Build Wheel
-        run: python setup.py bdist_wheel
+        run: |
+          python -m build --wheel
+          ls -al dist
 
-      # Step 6: Upload built wheels as artifacts
-      - name: Upload Built Wheels
+      - name: Upload Built Wheels (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: binaryparser-wheels
           path: dist/*.whl
+          if-no-files-found: error
 
-      # Step 7: Release
-      # - name: Create Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   with:
-      #     tag_name: v1.0.0
-      #     release_name: "Release v1.0.0"
-      #     draft: false
-      #     prerelease: false
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Release Asset
+      - name: Ensure release exists
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run:
-          gh release upload v1.1.0 dist/BinaryParser-0.0.1-cp314-cp314-linux_x86_64.whl
+        run: |
+          gh release view v1.1.0 >/dev/null 2>&1 || gh release create v1.1.0 -t "v1.1.0" -n ""
 
-      # Step 9: Install the built package
+      - name: Upload Release Asset(s)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ls -al dist
+          gh release upload v1.1.0 dist/*cp314*.whl --clobber
+
       - name: Install Built Package
         run: pip install dist/*.whl
 
-      # Step 10: Run tests
       - name: Run Tests
-        env:
-          PYTHONPATH: ${{ github.workspace }}
+        # Remove PYTHONPATH so tests import the installed wheel, not files from the repo root
         run: |
-          pip install pytest
+          python -m pip install pytest
           pytest tests/
 
-      # Optional Step: Debugging (if tests fail)
       - name: Show Python Environment (Debug)
         if: failure()
         run: |
           python --version
           pip list
           ls -R
-

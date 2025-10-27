@@ -61,14 +61,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release view v1.1.0 >/dev/null 2>&1 || gh release create v1.1.0 -t "v1.1.0" -n ""
+          gh release view v1.2.0 >/dev/null 2>&1 || gh release create v1.2.0 -t "v1.2.0" -n ""
 
       - name: Upload Release Asset(s)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls -al dist
-          gh release upload v1.1.0 dist/*cp314*.whl --clobber
+          gh release upload v1.2.0 dist/*cp314*.whl --clobber
 
       - name: Install Built Package
         run: pip install dist/*.whl

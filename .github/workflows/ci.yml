@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.14"]
         os: [ubuntu-latest]
 
     steps:
@@ -76,7 +76,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:
-          gh release upload v1.0.0 dist/BinaryParser-0.0.1-cp312-cp312-linux_x86_64.whl
+          gh release upload v1.1.0 dist/BinaryParser-0.0.1-cp314-cp314-linux_x86_64.whl
 
       # Step 9: Install the built package
       - name: Install Built Package

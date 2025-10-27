@@ -6,13 +6,20 @@ import re
 from typeguard import typechecked
 from typing import List
 
-
 @typechecked
 def get_files(path: str) -> List[str]:
     fs = [os.path.join(path, f) for f in os.listdir(path) if f.endswith(".cdf")]
-    assert len(fs) > 0, "No files found"
-    return fs
+    assert fs, "No files found"
 
+    def natkey(p: str):
+        name = os.path.basename(p)
+        is_spectra = 1 if "_spectra" in name else 0
+        base = name.replace("_spectra", "")
+        parts = re.split(r"(\d+)", base)
+        parts = [int(x) if x.isdigit() else x.lower() for x in parts]
+        return (parts, is_spectra)
+
+    return sorted(fs, key=natkey)
 
 # Attributes
 @typechecked

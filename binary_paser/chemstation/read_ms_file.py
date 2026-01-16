@@ -31,4 +31,4 @@ def merge_cycles_into_df(cycles: List[dict]) -> pd.DataFrame:
 def read_chemstation_file(file_path: str) -> pd.DataFrame:
     cycles = pm.read_cycles(file_path)
     cycle_dfs = convert_cycles_to_dfs(cycles)
-    return merge_cycles_into_df(cycles)
+    return cycle_dfs

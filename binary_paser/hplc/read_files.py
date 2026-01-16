@@ -6,7 +6,7 @@ import re
 from os import listdir
 from os.path import isfile, join
 from typeguard import typechecked
-from binary_paser.helper.typing import NumList
+from binary_paser.helper.utils import NumList
 from typing import List
 
 

@@ -1,4 +1,4 @@
-import BinaryParser as bp
+import binary_paser as bp
 
 
 def test_read_chromatograms():

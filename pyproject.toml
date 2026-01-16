@@ -1,4 +1,41 @@
-
 [build-system]
 requires = ["setuptools", "wheel", "pybind11"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "BinaryPaser"
+version = "0.1.1"
+authors = [{ name = "Konrad Krämer", email = "konrad.kraemer@kit.edu" }, { name = "Martin Starman", email = "martin.starman@kit.edu" }, { name = "Nicole Jung", email = "nicole.jung@kit.edu" }]
+requires-python = ">= 3.12"
+description = "Parsing binary files"
+license = "GNU"
+license-files = ["LICENSE"]
+readme = "README.md"
+keywords = ["chemistry", "convert", "file", "format"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas==2.3.3",
+    "numpy==2.4.1",
+    "typeguard==4.4.4",
+    "plotly==6.5.2",
+    "matplotlib==3.10.8",
+    "seaborn==0.13.2",
+    "netCDF4==1.7.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pybind11",
+    "pytest",
+    ]
+
+[project.urls]
+homepage = "https://github.com/ComPlat/BinaryParser"
+repository = "https://github.com/ComPlat/BinaryParser"
+
+[tool.setuptools]
+packages = ["binary_paser"]
+

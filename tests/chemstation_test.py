@@ -1,4 +1,4 @@
-import BinaryParser as bp
+import binary_paser as bp
 import pandas as pd
 import numpy as np
 
@@ -77,8 +77,6 @@ def test_svs1025f1():
         compare_spectras(df, spectra_true, time)
 
 
-test_svs1025f1()
-
 
 def test_scs776roh():
     file_path = "./tests/Chemstation/SVS-776ROH.D/MSD1.MS"
@@ -100,6 +98,3 @@ def test_scs776roh():
             delimiter=",", encoding="utf-16", header=None
         )
         compare_spectras(df, spectra_true, time)
-
-
-test_scs776roh()

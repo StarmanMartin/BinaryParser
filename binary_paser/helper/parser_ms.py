@@ -44,7 +44,9 @@ def _convert_mz_intensity(data_u16):
 
 
 def _read_cycle(buf, start, cycle_size):
-    data_u16 = np.frombuffer(buf[start:start + cycle_size*2], dtype=">H")
+    data_u16 = []
+    for i in range(cycle_size*2):
+        data_u16.append(_u16_be(buf, start + i * 2))
     return _convert_mz_intensity(data_u16)
 
 

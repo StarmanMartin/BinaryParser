@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "pybind11"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -36,6 +36,6 @@ dev = [
 homepage = "https://github.com/ComPlat/BinaryParser"
 repository = "https://github.com/ComPlat/BinaryParser"
 
-[tool.setuptools]
-packages = ["binary_paser"]
+[tool.setuptools.packages.find]
+include = ["binary_paser*"]
 

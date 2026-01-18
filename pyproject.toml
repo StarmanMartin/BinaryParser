@@ -28,7 +28,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pybind11",
     "pytest",
     ]
 

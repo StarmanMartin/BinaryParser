@@ -1,4 +1,4 @@
-import binary_paser.helper.parser_ms as pm
+import binary_parser.helper.parser_ms as pm
 import pandas as pd
 from typeguard import typechecked
 from typing import List

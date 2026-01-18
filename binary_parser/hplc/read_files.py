@@ -1,4 +1,4 @@
-import binary_paser.helper.parser_hplc as ph
+import binary_parser.helper.parser_hplc as ph
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
@@ -6,7 +6,7 @@ import re
 from os import listdir
 from os.path import isfile, join
 from typeguard import typechecked
-from binary_paser.helper.utils import NumList
+from binary_parser.helper.utils import NumList
 from typing import List
 
 

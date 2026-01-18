@@ -1,4 +1,4 @@
-import binary_paser.helper.parser_xray as px
+import binary_parser.helper.parser_xray as px
 import pandas as pd
 
 search_for = {

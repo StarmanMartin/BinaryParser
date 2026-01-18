@@ -1,5 +1,4 @@
-import binary_paser as bp
-import BinaryParser as cppV
+import binary_parser as bp
 import pandas as pd
 import numpy as np
 

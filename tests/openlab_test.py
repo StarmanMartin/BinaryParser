@@ -1,4 +1,4 @@
-import binary_paser.openlab as bp
+import binary_parser.openlab as bp
 
 path = "./tests/OpenLab/"
 

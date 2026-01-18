@@ -2,3 +2,5 @@
 bin/TestDaten
 .development
 tests/__pycache__
+/BinaryPaser.egg-info/
+/build/

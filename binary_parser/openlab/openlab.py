@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import re
 from typeguard import typechecked
-from binary_paser.helper.utils import NumList
+from binary_parser.helper.utils import NumList
 from typing import List
 
 @typechecked

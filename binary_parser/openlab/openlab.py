@@ -1,14 +1,18 @@
 import os
-import netCDF4 as nc
-import pandas as pd
-import numpy as np
 import re
-from typeguard import typechecked
-from binary_parser.helper.utils import NumList
 from typing import List
+
+import netCDF4 as nc
+import numpy as np
+import pandas as pd
+from typeguard import typechecked
+
 
 @typechecked
 def get_files(path: str) -> List[str]:
+    """
+    Return list of .cdf files in the given directory, sorted naturally.
+    """
     fs = [os.path.join(path, f) for f in os.listdir(path) if f.endswith(".cdf")]
     assert fs, "No files found"
 
@@ -24,7 +28,8 @@ def get_files(path: str) -> List[str]:
 
 # Attributes
 @typechecked
-def get_attr(path: str):
+def _get_attr(path: str):
+    """Read global NetCDF attributes from a file."""
     with nc.Dataset(path, "r") as dataset:
         attr = {key: dataset.getncattr(key) for key in dataset.ncattrs()}
     return attr
@@ -32,14 +37,23 @@ def get_attr(path: str):
 
 @typechecked
 def read_attr(path: str) -> pd.DataFrame:
+    """
+    Read all NetCDF global attributes across all .cdf files in the directory.
+    Returns a normalized DataFrame.
+    """
     fs = get_files(path)
-    attrs_lc = [pd.DataFrame([get_attr(fs[x])]) for x in range(len(fs))]
+    attrs_lc = [pd.DataFrame([_get_attr(fs[x])]) for x in range(len(fs))]
     attrs_lc = pd.concat(attrs_lc, ignore_index=True)
     return attrs_lc
 
+
+# ---------------------------------------------------------------------------
 # LC Data
+# ---------------------------------------------------------------------------
+
 @typechecked
 def get_lc_data(path: str) -> pd.DataFrame:
+    """Read LC detector signals from NetCDF."""
     with nc.Dataset(path, "r") as dataset:
         detector_signals = dataset.variables["ordinate_values"][:]
         global_atts = {key: dataset.getncattr(key) for key in dataset.ncattrs()}
@@ -58,6 +72,7 @@ def get_lc_data(path: str) -> pd.DataFrame:
 
 @typechecked
 def process_detector_info(df_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
+    """Extract wavelength from LC detector metadata."""
     for df in df_list:
         detector_name = df.attrs.get("detector", "")
         wl_match = (
@@ -72,6 +87,7 @@ def process_detector_info(df_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
 
 @typechecked
 def read_lc(path: str) -> pd.DataFrame:
+    """Read all LC files containing 'DAD' in filename and concatenate."""
     fs = get_files(path)
     # Filter fs --> Files which contain DAD within their name
     fs = [f for f in fs if "DAD" in os.path.basename(f)]
@@ -81,16 +97,19 @@ def read_lc(path: str) -> pd.DataFrame:
     return df
 
 
+# ---------------------------------------------------------------------------
 # MS Data
+# ---------------------------------------------------------------------------
+
 @typechecked
-def get_point_counts(path: str) -> np.ma.MaskedArray:
+def _get_point_counts(path: str) -> np.ma.MaskedArray:
     with nc.Dataset(path, "r") as dataset:
         res = dataset.variables["point_count"][:]
         return res
 
 
 @typechecked
-def get_ms_data(path: str) -> pd.DataFrame:
+def _get_ms_data(path: str) -> pd.DataFrame:
     with nc.Dataset(path, "r") as dataset:
         mz_values = dataset.variables["mass_values"][:]
         intensities = dataset.variables["intensity_values"][:]
@@ -98,14 +117,14 @@ def get_ms_data(path: str) -> pd.DataFrame:
 
 
 @typechecked
-def get_scan_time(path: str) -> np.ma.MaskedArray:
+def _get_scan_time(path: str) -> np.ma.MaskedArray:
     with nc.Dataset(path, "r") as dataset:
         time = dataset.variables["scan_acquisition_time"][:]
     return time / 60
 
 
 @typechecked
-def split_data(
+def _split_data(
     data: pd.DataFrame, point_counts: np.ma.MaskedArray
 ) -> List[pd.DataFrame]:
     end_indices = np.cumsum(point_counts)
@@ -115,7 +134,7 @@ def split_data(
 
 
 @typechecked
-def normalise(data_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
+def _normalise(data_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
     return [
         df.assign(intensities=df["intensities"] * (100 / df["intensities"].max()))
         for df in data_list
@@ -126,15 +145,15 @@ def normalise(data_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
 def read_ms(path: str) -> List[pd.DataFrame]:
     fs = get_files(path)
     fs_ms = [f for f in fs if "spectra" in os.path.basename(f)]
-    data_minus = get_ms_data(fs_ms[0])
-    point_counts_minus = get_point_counts(fs_ms[0])
-    time_minus = get_scan_time(fs_ms[0])
-    df_minus = normalise(split_data(data_minus, point_counts_minus))
+    data_minus = _get_ms_data(fs_ms[0])
+    point_counts_minus = _get_point_counts(fs_ms[0])
+    time_minus = _get_scan_time(fs_ms[0])
+    df_minus = _normalise(_split_data(data_minus, point_counts_minus))
 
-    data_plus = get_ms_data(fs_ms[1])
-    point_counts_plus = get_point_counts(fs_ms[1])
-    time_plus = get_scan_time(fs_ms[1])
-    df_plus = normalise(split_data(data_plus, point_counts_plus))
+    data_plus = _get_ms_data(fs_ms[1])
+    point_counts_plus = _get_point_counts(fs_ms[1])
+    time_plus = _get_scan_time(fs_ms[1])
+    df_plus = _normalise(_split_data(data_plus, point_counts_plus))
 
     df_minus = pd.concat([df.assign(time=t) for df, t in zip(df_minus, time_minus)])
     df_plus = pd.concat([df.assign(time=t) for df, t in zip(df_plus, time_plus)])

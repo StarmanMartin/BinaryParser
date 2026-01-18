@@ -18,9 +18,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install .[dev]
-      - name: Build tests
-        run: |
-          python -m test_manager -t -g -tp
       - name: Test the code with pytest
         run: |
           pytest .

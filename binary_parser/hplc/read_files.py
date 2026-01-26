@@ -5,12 +5,12 @@ import plotly.express as px
 import re
 from os import listdir
 from os.path import isfile, join
-from typeguard import typechecked
+
 from binary_parser.helper.utils import NumList
 from typing import List
 
 
-@typechecked
+
 def check_identical_lists(lst: List[List[float]]) -> bool:
     if not lst:
         return False
@@ -21,7 +21,7 @@ def check_identical_lists(lst: List[List[float]]) -> bool:
     return True
 
 
-@typechecked
+
 def read_time(file_path: str, length: int) -> NumList:
     offsetTime = int("0000011a", 16)
     time:NumList = ph.readTime(file_path, offsetTime)
@@ -30,7 +30,7 @@ def read_time(file_path: str, length: int) -> NumList:
     return res
 
 
-@typechecked
+
 def read_file_info(file_path: str) -> int:
     offsetFileInfo = int("00001080", 16)
     res = ph.readUint8(file_path, offsetFileInfo)
@@ -40,7 +40,7 @@ def read_file_info(file_path: str) -> int:
     return matches
 
 
-@typechecked
+
 def scale_data(file_path: str, l: NumList) -> NumList:
     intercept: float = ph.readDouble(file_path, 4724)
     slope: float = ph.readDouble(file_path, 4732)
@@ -48,7 +48,7 @@ def scale_data(file_path: str, l: NumList) -> NumList:
     return res
 
 
-@typechecked
+
 def read_chromatograms(path: str) -> pd.DataFrame:
     files: List[str] = [
         path + "/" + f
@@ -71,7 +71,7 @@ def read_chromatograms(path: str) -> pd.DataFrame:
     return df
 
 
-@typechecked
+
 def plot_chromatograms(path: str):
     df = read_chromatograms(path)
     time = df["time"]
@@ -85,7 +85,7 @@ def plot_chromatograms(path: str):
     fig.show()
 
 
-@typechecked
+
 def read_uv(path: str) -> pd.DataFrame:
     uv = ph.UVClass(path)
     time: pd.DataFrame = pd.DataFrame(uv.getTime())
@@ -102,7 +102,7 @@ def read_uv(path: str) -> pd.DataFrame:
     return df_unmelted
 
 
-@typechecked
+
 def plot_uv(path: str):
     df = read_uv(path)
     time = df["time"]

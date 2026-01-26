@@ -20,7 +20,6 @@ classifiers = [
 dependencies = [
     "pandas==2.3.3",
     "numpy==2.4.1",
-    "typeguard==4.4.4",
     "plotly==6.5.2",
     "matplotlib==3.10.8",
     "seaborn==0.13.2",

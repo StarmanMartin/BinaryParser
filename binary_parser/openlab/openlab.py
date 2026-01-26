@@ -5,10 +5,10 @@ from typing import List
 import netCDF4 as nc
 import numpy as np
 import pandas as pd
-from typeguard import typechecked
 
 
-@typechecked
+
+
 def get_files(path: str) -> List[str]:
     """
     Return list of .cdf files in the given directory, sorted naturally.
@@ -27,7 +27,7 @@ def get_files(path: str) -> List[str]:
     return sorted(fs, key=natkey)
 
 # Attributes
-@typechecked
+
 def _get_attr(path: str):
     """Read global NetCDF attributes from a file."""
     with nc.Dataset(path, "r") as dataset:
@@ -35,7 +35,7 @@ def _get_attr(path: str):
     return attr
 
 
-@typechecked
+
 def read_attr(path: str) -> pd.DataFrame:
     """
     Read all NetCDF global attributes across all .cdf files in the directory.
@@ -51,7 +51,7 @@ def read_attr(path: str) -> pd.DataFrame:
 # LC Data
 # ---------------------------------------------------------------------------
 
-@typechecked
+
 def get_lc_data(path: str) -> pd.DataFrame:
     """Read LC detector signals from NetCDF."""
     with nc.Dataset(path, "r") as dataset:
@@ -70,7 +70,7 @@ def get_lc_data(path: str) -> pd.DataFrame:
     return data
 
 
-@typechecked
+
 def process_detector_info(df_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
     """Extract wavelength from LC detector metadata."""
     for df in df_list:
@@ -85,7 +85,7 @@ def process_detector_info(df_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
     return df_list
 
 
-@typechecked
+
 def read_lc(path: str) -> pd.DataFrame:
     """Read all LC files containing 'DAD' in filename and concatenate."""
     fs = get_files(path)
@@ -101,14 +101,14 @@ def read_lc(path: str) -> pd.DataFrame:
 # MS Data
 # ---------------------------------------------------------------------------
 
-@typechecked
+
 def _get_point_counts(path: str) -> np.ma.MaskedArray:
     with nc.Dataset(path, "r") as dataset:
         res = dataset.variables["point_count"][:]
         return res
 
 
-@typechecked
+
 def _get_ms_data(path: str) -> pd.DataFrame:
     with nc.Dataset(path, "r") as dataset:
         mz_values = dataset.variables["mass_values"][:]
@@ -116,14 +116,14 @@ def _get_ms_data(path: str) -> pd.DataFrame:
     return pd.DataFrame({"mz": mz_values, "intensities": intensities})
 
 
-@typechecked
+
 def _get_scan_time(path: str) -> np.ma.MaskedArray:
     with nc.Dataset(path, "r") as dataset:
         time = dataset.variables["scan_acquisition_time"][:]
     return time / 60
 
 
-@typechecked
+
 def _split_data(
     data: pd.DataFrame, point_counts: np.ma.MaskedArray
 ) -> List[pd.DataFrame]:
@@ -133,7 +133,7 @@ def _split_data(
     return res
 
 
-@typechecked
+
 def _normalise(data_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
     return [
         df.assign(intensities=df["intensities"] * (100 / df["intensities"].max()))
@@ -141,7 +141,7 @@ def _normalise(data_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
     ]
 
 
-@typechecked
+
 def read_ms(path: str) -> List[pd.DataFrame]:
     fs = get_files(path)
     fs_ms = [f for f in fs if "spectra" in os.path.basename(f)]
